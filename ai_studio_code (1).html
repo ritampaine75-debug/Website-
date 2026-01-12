@@ -1,0 +1,985 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>CodeShare - Social Project Hub</title>
+    
+    <!-- External Assets -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+/* TOP NAV BUTTONS */
+.top-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.top-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border-radius: 20px;
+    background: var(--primary-light);
+    color: var(--primary);
+    border: none;
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.25s ease;
+}
+
+.top-btn i {
+    font-size: 1rem;
+}
+
+.top-btn:hover {
+    background: var(--primary);
+    color: white;
+}
+
+.top-btn:active {
+    transform: scale(0.95);
+}
+
+        /* =========================================
+           1. CSS VARIABLES & THEMES
+           ========================================= */
+        :root {
+            --font-main: 'Outfit', sans-serif;
+            --radius-s: 8px;
+            --radius-m: 16px;
+            --radius-l: 24px;
+            --shadow-sm: 0 2px 8px rgba(0,0,0,0.05);
+            --shadow-md: 0 8px 24px rgba(0,0,0,0.1);
+            --nav-height: 65px;
+            --trans: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+
+        /* Theme: Light Premium */
+        body.theme-light {
+            --bg-body: #f0f2f5;
+            --bg-card: #ffffff;
+            --text-main: #1c1e21;
+            --text-sub: #65676b;
+            --primary: #2563eb;
+            --primary-light: #eff6ff;
+            --border: #e4e6eb;
+            --accent: #3b82f6;
+        }
+
+        /* Theme: Dark Premium */
+        body.theme-dark {
+            --bg-body: #0f172a;
+            --bg-card: #1e293b;
+            --text-main: #f8fafc;
+            --text-sub: #94a3b8;
+            --primary: #38bdf8;
+            --primary-light: #0c4a6e;
+            --border: #334155;
+            --accent: #0ea5e9;
+        }
+
+        /* Theme: Gradient Premium */
+        body.theme-gradient {
+            --bg-body: linear-gradient(135deg, #1a2980 0%, #26d0ce 100%);
+            --bg-card: rgba(255, 255, 255, 0.9);
+            --text-main: #1a1a1a;
+            --text-sub: #4a4a4a;
+            --primary: #4e54c8;
+            --primary-light: #e0eafc;
+            --border: rgba(255,255,255,0.5);
+            --accent: #8f94fb;
+        }
+
+        /* Theme: Minimal Gray */
+        body.theme-minimal {
+            --bg-body: #e5e5e5;
+            --bg-card: #f5f5f5;
+            --text-main: #111;
+            --text-sub: #555;
+            --primary: #333;
+            --primary-light: #ddd;
+            --border: #ccc;
+            --accent: #000;
+        }
+
+        /* Theme: Soft Color */
+        body.theme-soft {
+            --bg-body: #fff0f5;
+            --bg-card: #fff;
+            --text-main: #4a4a4a;
+            --text-sub: #7a7a7a;
+            --primary: #ff6b81;
+            --primary-light: #ffe4e8;
+            --border: #ffd1dc;
+            --accent: #ff4757;
+        }
+
+        /* =========================================
+           2. GLOBAL STYLES
+           ========================================= */
+        * { box-sizing: border-box; margin: 0; padding: 0; outline: none; -webkit-tap-highlight-color: transparent; }
+        
+        body {
+            font-family: var(--font-main);
+            background: var(--bg-body);
+            color: var(--text-main);
+            transition: background 0.5s ease;
+            padding-bottom: 80px; /* Space for Bottom Nav */
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: var(--text-sub); border-radius: 10px; opacity: 0.5; }
+
+        /* Helpers */
+        .hidden { display: none !important; }
+        .flex { display: flex; }
+        .flex-col { flex-direction: column; }
+        .items-center { align-items: center; }
+        .justify-between { justify-content: space-between; }
+        .btn { cursor: pointer; border: none; font-family: inherit; transition: var(--trans); }
+
+        /* =========================================
+           3. UI COMPONENTS
+           ========================================= */
+        
+        /* Navbar */
+        .navbar {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: var(--bg-card);
+            padding: 15px 20px;
+            box-shadow: var(--shadow-sm);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .logo { font-size: 1.4rem; font-weight: 700; color: var(--primary); letter-spacing: -0.5px; }
+        .logo i { margin-right: 8px; }
+
+        /* Bottom Nav */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0; left: 0; width: 100%;
+            background: var(--bg-card);
+            height: var(--nav-height);
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            border-top: 1px solid var(--border);
+            z-index: 200;
+            padding-bottom: env(safe-area-inset-bottom);
+        }
+        .nav-item {
+            color: var(--text-sub);
+            font-size: 1.4rem;
+            position: relative;
+            padding: 10px;
+        }
+        .nav-item.active { color: var(--primary); }
+        .nav-item.active::after {
+            content: ''; position: absolute; bottom: 5px; left: 50%; transform: translateX(-50%);
+            width: 5px; height: 5px; background: var(--primary); border-radius: 50%;
+        }
+
+        /* FAB (Floating Action Button) */
+        .fab {
+            position: fixed;
+            bottom: calc(var(--nav-height) + 20px);
+            right: 20px;
+            width: 56px; height: 56px;
+            background: var(--primary);
+            color: #fff;
+            border-radius: 50%;
+            display: flex; justify-content: center; align-items: center;
+            font-size: 1.5rem;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            z-index: 190;
+            transform: scale(1);
+        }
+        .fab:active { transform: scale(0.95); }
+
+        /* Container */
+        .container { max-width: 700px; margin: 0 auto; padding: 20px; }
+
+        /* Cards */
+        .card {
+            background: var(--bg-card);
+            border-radius: var(--radius-m);
+            overflow: hidden;
+            margin-bottom: 20px;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border);
+            animation: fadeUp 0.4s ease forwards;
+        }
+        @keyframes fadeUp { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
+
+        .card-img {
+            width: 100%; height: 180px;
+            background: var(--primary-light);
+            object-fit: cover;
+        }
+        .card-body { padding: 15px; }
+        .card-title { font-size: 1.1rem; font-weight: 600; margin-bottom: 5px; color: var(--text-main); }
+        .card-desc { font-size: 0.9rem; color: var(--text-sub); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; margin-bottom: 10px; }
+        
+        .card-meta {
+            display: flex; justify-content: space-between; align-items: center;
+            font-size: 0.8rem; color: var(--text-sub);
+            padding-top: 10px; border-top: 1px solid var(--border);
+        }
+        .meta-actions button { background: none; color: var(--text-sub); margin-left: 10px; font-size: 0.9rem; display: inline-flex; align-items: center; gap: 4px; }
+        .meta-actions button.liked { color: #ef4444; }
+
+        /* Forms */
+        .form-group { margin-bottom: 15px; }
+        .form-label { display: block; margin-bottom: 8px; font-weight: 500; font-size: 0.9rem; }
+        .form-control {
+            width: 100%; padding: 12px;
+            background: var(--bg-body);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-s);
+            color: var(--text-main);
+            font-family: inherit;
+        }
+        textarea.form-control { min-height: 120px; resize: vertical; font-family: 'Courier New', monospace; }
+        
+        .btn-primary {
+            width: 100%; padding: 14px;
+            background: var(--primary); color: #fff;
+            border-radius: var(--radius-s); font-weight: 600;
+        }
+        .btn-secondary {
+            padding: 8px 16px; background: var(--bg-body); border: 1px solid var(--border);
+            border-radius: var(--radius-s); color: var(--text-main);
+        }
+
+        /* Detail View Specifics */
+        .detail-header { margin-bottom: 20px; }
+        .detail-title { font-size: 1.8rem; font-weight: 700; }
+        .tag { display: inline-block; padding: 4px 10px; background: var(--primary-light); color: var(--primary); border-radius: 20px; font-size: 0.75rem; margin-right: 5px; margin-top: 5px;}
+        
+        .preview-box {
+            width: 100%; height: 400px;
+            background: #fff;
+            border: 2px solid var(--border);
+            border-radius: var(--radius-m);
+            margin: 15px 0;
+            overflow: hidden;
+            position: relative;
+        }
+        iframe { width: 100%; height: 100%; border: none; }
+
+        .comments-section { margin-top: 30px; }
+        .comment { padding: 10px 0; border-bottom: 1px solid var(--border); }
+        .comment-user { font-weight: 600; font-size: 0.9rem; margin-bottom: 2px; }
+        .comment-text { font-size: 0.9rem; color: var(--text-sub); }
+
+        /* Loader */
+        #loader {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--bg-body); z-index: 2000;
+            display: flex; justify-content: center; align-items: center; flex-direction: column;
+        }
+        .spinner {
+            width: 40px; height: 40px; border: 4px solid var(--border);
+            border-top: 4px solid var(--primary); border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+
+        /* Modals */
+        .modal {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.6); z-index: 1000;
+            display: none; justify-content: center; align-items: center;
+        }
+        .modal-content {
+            background: var(--bg-card); width: 90%; max-width: 400px;
+            padding: 24px; border-radius: var(--radius-l);
+            text-align: center;
+        }
+        .theme-btn {
+            display: flex; align-items: center; width: 100%; padding: 12px;
+            margin-bottom: 8px; border: 1px solid var(--border);
+            border-radius: var(--radius-s); background: var(--bg-body); color: var(--text-main);
+        }
+        .theme-btn i { margin-right: 12px; width: 20px; color: var(--primary); }
+
+        /* User Profile */
+        .profile-header { text-align: center; padding: 20px 0; }
+        .avatar {
+            width: 80px; height: 80px; border-radius: 50%; object-fit: cover;
+            border: 3px solid var(--primary); margin-bottom: 10px;
+        }
+        .stat-box {
+            display: flex; justify-content: space-around; margin: 20px 0;
+            background: var(--bg-card); padding: 15px; border-radius: var(--radius-m); border: 1px solid var(--border);
+        }
+        .stat-item { text-align: center; }
+        .stat-val { font-weight: 700; font-size: 1.2rem; }
+        .stat-lbl { font-size: 0.8rem; color: var(--text-sub); }
+
+    </style>
+</head>
+<body class="theme-light">
+
+    <!-- LOADER -->
+    <div id="loader">
+        <div class="spinner"></div>
+        <p style="margin-top: 15px; font-weight: 500;">Initializing CodeShare...</p>
+    </div>
+
+    <!-- HEADER -->
+    <div class="navbar">
+        <div class="logo"><i class="fa-solid fa-code"></i> CodeShare</div>
+<div class="top-actions">
+    <button class="top-btn" onclick="app.router('feed')">
+        <i class="fa-solid fa-house"></i>
+        Home
+    </button>
+
+    <button class="top-btn" onclick="app.toggleModal('theme-modal')">
+        <i class="fa-solid fa-palette"></i>
+        Theme
+    </button>
+</div>
+
+            </div>
+
+    <!-- MAIN VIEWS -->
+    <div class="container">
+        
+        <!-- 1. FEED VIEW -->
+        <div id="view-feed" class="view-section">
+            <h2 style="margin-bottom: 15px;">Trending Projects</h2>
+            <div id="feed-list"></div>
+        </div>
+
+        <!-- 2. EXPLORE/SEARCH VIEW -->
+        <div id="view-explore" class="view-section hidden">
+            <input type="text" class="form-control" placeholder="Search projects..." oninput="app.handleSearch(this.value)" style="margin-bottom: 20px;">
+            <div class="flex" style="gap:10px; margin-bottom: 20px; overflow-x: auto;">
+                <button class="btn-secondary" onclick="app.filterFeed('all')">All</button>
+                <button class="btn-secondary" onclick="app.filterFeed('new')">Newest</button>
+                <button class="btn-secondary" onclick="app.filterFeed('popular')">Popular</button>
+            </div>
+            <div id="explore-list"></div>
+        </div>
+
+        <!-- 3. UPLOAD VIEW -->
+        <div id="view-upload" class="view-section hidden">
+            <h2 class="detail-title" style="margin-bottom: 20px;">Upload Project</h2>
+            <form id="uploadForm" onsubmit="app.handleUpload(event)">
+                <input type="hidden" id="edit-id">
+                
+                <div class="form-group">
+                    <label class="form-label">Project Name</label>
+                    <input type="text" id="up-name" class="form-control" required placeholder="My Awesome App">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Description</label>
+                    <textarea id="up-desc" class="form-control" style="min-height: 80px;" required placeholder="What does it do?"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">HTML Content</label>
+                    <div style="display:flex; gap:10px; margin-bottom:10px;">
+                        <button type="button" class="btn-secondary" onclick="document.getElementById('file-input').click()">
+                            <i class="fa-solid fa-file-upload"></i> Upload .html
+                        </button>
+                        <span id="file-name" style="font-size:0.8rem; align-self:center; color:var(--text-sub)"></span>
+                        <input type="file" id="file-input" accept=".html,.htm" style="display:none" onchange="app.readHtmlFile(this)">
+                    </div>
+                    <textarea id="up-code" class="form-control" required placeholder="Paste HTML code here..."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Cover Image (Optional)</label>
+                    <input type="file" id="img-input" accept="image/*" class="form-control">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Tags (comma separated)</label>
+                    <input type="text" id="up-tags" class="form-control" placeholder="game, calculator, design">
+                </div>
+
+                <button type="submit" class="btn-primary" id="btn-submit">Publish Project</button>
+            </form>
+        </div>
+
+        <!-- 4. PROFILE VIEW -->
+        <div id="view-profile" class="view-section hidden">
+            <div class="profile-header">
+                <img id="profile-img" src="https://i.ibb.co/5c5k5h6/user-placeholder.png" class="avatar">
+                <h2 id="profile-name">User</h2>
+                <button class="btn-secondary" style="margin-top:10px" onclick="app.editProfile()"><i class="fa-solid fa-pen"></i> Edit Profile</button>
+            </div>
+            
+            <div class="stat-box">
+                <div class="stat-item"><div class="stat-val" id="stat-projects">0</div><div class="stat-lbl">Projects</div></div>
+                <div class="stat-item"><div class="stat-val" id="stat-likes">0</div><div class="stat-lbl">Likes</div></div>
+            </div>
+
+            <h3 style="margin-bottom:15px; border-bottom:1px solid var(--border); padding-bottom:5px;">My Projects</h3>
+            <div id="profile-projects-list"></div>
+            
+            <h3 style="margin-top:30px; margin-bottom:15px; border-bottom:1px solid var(--border); padding-bottom:5px;">Saved</h3>
+            <div id="profile-saved-list"></div>
+        </div>
+
+        <!-- 5. DETAIL VIEW -->
+        <div id="view-detail" class="view-section hidden">
+            <button class="btn-secondary" onclick="app.router('feed')" style="margin-bottom:15px">
+                <i class="fa-solid fa-arrow-left"></i> Back
+            </button>
+            
+            <div id="detail-content"></div>
+
+            <div class="comments-section">
+                <h3>Comments</h3>
+                <div style="display:flex; gap:10px; margin-top:10px;">
+                    <input type="text" id="comment-input" class="form-control" placeholder="Write a comment...">
+                    <button class="btn-secondary" onclick="app.postComment()"><i class="fa-solid fa-paper-plane"></i></button>
+                </div>
+                <div id="comments-list" style="margin-top: 15px;"></div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- THEME MODAL -->
+    <div id="theme-modal" class="modal" onclick="if(event.target === this) app.toggleModal('theme-modal')">
+        <div class="modal-content">
+            <h3 style="margin-bottom:15px;">Select Theme</h3>
+            <button class="theme-btn" onclick="app.setTheme('theme-light')"><i class="fa-solid fa-sun"></i> Light Premium</button>
+            <button class="theme-btn" onclick="app.setTheme('theme-dark')"><i class="fa-solid fa-moon"></i> Dark Premium</button>
+            <button class="theme-btn" onclick="app.setTheme('theme-gradient')"><i class="fa-solid fa-gem"></i> Gradient Premium</button>
+            <button class="theme-btn" onclick="app.setTheme('theme-minimal')"><i class="fa-solid fa-circle"></i> Minimal Gray</button>
+            <button class="theme-btn" onclick="app.setTheme('theme-soft')"><i class="fa-solid fa-heart"></i> Soft Color</button>
+        </div>
+    </div>
+
+    <!-- EDIT PROFILE MODAL -->
+    <div id="profile-modal" class="modal" onclick="if(event.target === this) app.toggleModal('profile-modal')">
+        <div class="modal-content">
+            <h3>Edit Profile</h3>
+            <input type="text" id="edit-p-name" class="form-control" placeholder="Display Name" style="margin:10px 0;">
+            <input type="file" id="edit-p-img" accept="image/*" class="form-control" style="margin-bottom:10px;">
+            <button class="btn-primary" onclick="app.saveProfile()">Save</button>
+        </div>
+    </div>
+
+    <!-- FAB -->
+    <div class="fab" onclick="app.openUpload()">
+        <i class="fa-solid fa-plus"></i>
+    </div>
+
+    <!-- BOTTOM NAV -->
+    <div class="bottom-nav">
+        <div class="nav-item active" onclick="app.router('feed')" id="nav-feed"><i class="fa-solid fa-home"></i></div>
+        <div class="nav-item" onclick="app.router('explore')" id="nav-explore"><i class="fa-solid fa-compass"></i></div>
+        <div class="nav-item" onclick="app.router('profile')" id="nav-profile"><i class="fa-solid fa-user"></i></div>
+    </div>
+
+    <!-- JAVASCRIPT LOGIC -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getDatabase, ref, push, onValue, set, update, remove, runTransaction } 
+        from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+        /**
+         * CONFIGURATION
+         * Replace the firebaseConfig below with your own from Firebase Console.
+         */
+        const firebaseConfig = {
+  apiKey: "AIzaSyAkMGGPB5WYc7gqvLX2uZkz--U882n24k0",
+  authDomain: "ritabhm-d66e1.firebaseapp.com",
+  databaseURL: "https://ritabhm-d66e1-default-rtdb.firebaseio.com",
+  projectId: "ritabhm-d66e1",
+  storageBucket: "ritabhm-d66e1.firebasestorage.app",
+  messagingSenderId: "172265757774",
+  appId: "1:172265757774:web:bb5fcd056369f2b48b771f"
+};
+        // IMAGE BB API KEY (Get free from api.imgbb.com)
+        const IMGBB_API_KEY = "784e9b34e0d69f48e09a40e41d3e10fd"; // Using a demo key for functionality, replace for production security
+
+        // INIT FIREBASE
+        let db;
+        try {
+            const fbApp = initializeApp(firebaseConfig);
+            db = getDatabase(fbApp);
+        } catch (e) {
+            console.error("Firebase Init Error (Likely missing config):", e);
+            alert("Please configure Firebase keys in the code!");
+        }
+
+        /* =========================================
+           APP LOGIC
+           ========================================= */
+        window.app = {
+            currentUser: {
+                id: localStorage.getItem('cs_uid'),
+                name: 'User',
+                avatar: 'https://i.ibb.co/5c5k5h6/user-placeholder.png',
+                saved: {}
+            },
+            projects: [],
+            currentProject: null,
+            
+            init: function() {
+                // User Identity
+                if(!this.currentUser.id) {
+                    this.currentUser.id = 'user_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+                    localStorage.setItem('cs_uid', this.currentUser.id);
+                }
+
+                // Theme
+                const savedTheme = localStorage.getItem('cs_theme') || 'theme-light';
+                document.body.className = savedTheme;
+
+                // Load User Data
+                this.loadUserProfile();
+
+                // Listen to Projects
+                const pRef = ref(db, 'projects');
+                onValue(pRef, (snapshot) => {
+                    const data = snapshot.val();
+                    this.projects = [];
+                    if(data) {
+                        Object.keys(data).forEach(key => {
+                            this.projects.push({id: key, ...data[key]});
+                        });
+                        this.projects.sort((a,b) => b.createdAt - a.createdAt); // Newest first
+                    }
+                    this.renderFeeds();
+                    document.getElementById('loader').style.display = 'none';
+                });
+            },
+
+            loadUserProfile: function() {
+                const uRef = ref(db, 'users/' + this.currentUser.id);
+                onValue(uRef, (snap) => {
+                    const d = snap.val();
+                    if(d) {
+                        this.currentUser.name = d.name || 'User';
+                        this.currentUser.avatar = d.avatar || this.currentUser.avatar;
+                        this.currentUser.saved = d.saved || {};
+                    }
+                });
+            },
+
+            // --- ROUTING ---
+            router: function(view) {
+                document.querySelectorAll('.view-section').forEach(el => el.classList.add('hidden'));
+                document.getElementById(`view-${view}`).classList.remove('hidden');
+                
+                // Update Bottom Nav
+                document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+                const navItem = document.getElementById(`nav-${view}`);
+                if(navItem) navItem.classList.add('active');
+
+                // Fab visibility
+                const fab = document.querySelector('.fab');
+                if(view === 'upload' || view === 'detail') fab.style.display = 'none';
+                else fab.style.display = 'flex';
+
+                if(view === 'profile') this.renderProfile();
+                
+                window.scrollTo(0,0);
+            },
+
+            toggleModal: function(id) {
+                const el = document.getElementById(id);
+                el.style.display = (el.style.display === 'flex') ? 'none' : 'flex';
+            },
+
+            setTheme: function(theme) {
+                document.body.className = theme;
+                localStorage.setItem('cs_theme', theme);
+                this.toggleModal('theme-modal');
+            },
+
+            // --- UPLOAD / EDIT LOGIC ---
+            openUpload: function(editId = null) {
+                document.getElementById('uploadForm').reset();
+                document.getElementById('edit-id').value = '';
+                document.getElementById('file-name').innerText = '';
+                document.getElementById('btn-submit').innerText = 'Publish Project';
+                
+                if(editId) {
+                    const p = this.projects.find(x => x.id === editId);
+                    if(p) {
+                        document.getElementById('edit-id').value = p.id;
+                        document.getElementById('up-name').value = p.name;
+                        document.getElementById('up-desc').value = p.desc;
+                        document.getElementById('up-code').value = p.code;
+                        document.getElementById('up-tags').value = (p.tags || []).join(', ');
+                        document.getElementById('btn-submit').innerText = 'Update Project';
+                    }
+                }
+                this.router('upload');
+            },
+
+            readHtmlFile: function(input) {
+                const file = input.files[0];
+                if(file) {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        document.getElementById('up-code').value = e.target.result;
+                        document.getElementById('file-name').innerText = file.name + ' (' + (file.size/1024).toFixed(1) + 'KB)';
+                    };
+                    reader.readAsText(file);
+                }
+            },
+
+            uploadImageBB: async function(file) {
+                const formData = new FormData();
+                formData.append('image', file);
+                try {
+                    const res = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, {
+                        method: 'POST', body: formData
+                    });
+                    const data = await res.json();
+                    return data.success ? data.data.url : null;
+                } catch(e) { console.error(e); return null; }
+            },
+
+            handleUpload: async function(e) {
+                e.preventDefault();
+                document.getElementById('loader').style.display = 'flex';
+
+                const name = document.getElementById('up-name').value;
+                const desc = document.getElementById('up-desc').value;
+                const code = document.getElementById('up-code').value;
+                const tags = document.getElementById('up-tags').value.split(',').map(t=>t.trim());
+                const imgInput = document.getElementById('img-input').files[0];
+                const editId = document.getElementById('edit-id').value;
+
+                let imgUrl = null;
+                // Keep old image if editing and no new one uploaded
+                if(editId) {
+                    const oldP = this.projects.find(x=>x.id===editId);
+                    imgUrl = oldP.image;
+                }
+
+                if(imgInput) {
+                    const uploaded = await this.uploadImageBB(imgInput);
+                    if(uploaded) imgUrl = uploaded;
+                }
+
+                const size = (new Blob([code]).size / 1024).toFixed(2);
+
+                const pData = {
+                    name, desc, code, tags,
+                    image: imgUrl,
+                    size,
+                    updatedAt: Date.now(),
+                    ownerId: this.currentUser.id
+                };
+
+                if(editId) {
+                    await update(ref(db, 'projects/'+editId), pData);
+                } else {
+                    pData.createdAt = Date.now();
+                    pData.likes = 0;
+                    pData.views = 0;
+                    pData.ownerName = this.currentUser.name;
+                    await push(ref(db, 'projects'), pData);
+                }
+
+                document.getElementById('loader').style.display = 'none';
+                this.router('feed');
+            },
+
+            // --- RENDERING ---
+            renderFeeds: function() {
+                // Feed
+                const feedContainer = document.getElementById('feed-list');
+                feedContainer.innerHTML = '';
+                this.projects.forEach(p => feedContainer.innerHTML += this.createCardHtml(p));
+
+                // Explore (All by default)
+                const exploreContainer = document.getElementById('explore-list');
+                exploreContainer.innerHTML = '';
+                this.projects.forEach(p => exploreContainer.innerHTML += this.createCardHtml(p));
+            },
+
+            createCardHtml: function(p) {
+                const isLiked = localStorage.getItem('liked_' + p.id) ? 'liked' : '';
+                const imgDisplay = p.image ? `<img src="${p.image}" class="card-img">` : `<div class="card-img" style="display:flex;align-items:center;justify-content:center;color:var(--primary)"><i class="fa-solid fa-code fa-3x"></i></div>`;
+                
+                return `
+                <div class="card" onclick="app.showDetail('${p.id}')">
+                    ${imgDisplay}
+                    <div class="card-body">
+                        <div class="card-title">${this.esc(p.name)}</div>
+                        <div class="card-desc">${this.esc(p.desc)}</div>
+                        <div class="card-meta">
+                            <span>by ${this.esc(p.ownerName || 'User')}</span>
+                            <div class="meta-actions">
+                                <button class="${isLiked}"><i class="fa-solid fa-heart"></i> ${p.likes||0}</button>
+                                <button><i class="fa-solid fa-eye"></i> ${p.views||0}</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>`;
+            },
+
+            handleSearch: function(query) {
+                const q = query.toLowerCase();
+                const list = document.getElementById('explore-list');
+                list.innerHTML = '';
+                const filtered = this.projects.filter(p => p.name.toLowerCase().includes(q) || (p.tags && p.tags.join(' ').toLowerCase().includes(q)));
+                filtered.forEach(p => list.innerHTML += this.createCardHtml(p));
+            },
+
+            filterFeed: function(type) {
+                const list = document.getElementById('explore-list');
+                list.innerHTML = '';
+                let arr = [...this.projects];
+                if(type === 'popular') arr.sort((a,b) => (b.likes||0) - (a.likes||0));
+                if(type === 'new') arr.sort((a,b) => b.createdAt - a.createdAt);
+                arr.forEach(p => list.innerHTML += this.createCardHtml(p));
+            },
+
+            // --- DETAIL & INTERACTIONS ---
+            showDetail: function(id) {
+                this.currentProject = this.projects.find(p => p.id === id);
+                if(!this.currentProject) return;
+                
+                // Increment View
+                runTransaction(ref(db, `projects/${id}/views`), (v) => (v||0) + 1);
+
+                const p = this.currentProject;
+                const isOwner = p.ownerId === this.currentUser.id;
+                const isSaved = this.currentUser.saved && this.currentUser.saved[id];
+                const isLiked = localStorage.getItem('liked_'+id) ? 'liked' : '';
+                
+                const tagsHtml = (p.tags||[]).map(t => `<span class="tag">#${t}</span>`).join('');
+
+                const html = `
+                    <div class="detail-header">
+                        <div class="detail-title">${this.esc(p.name)}</div>
+                        <div style="font-size:0.9rem; color:var(--text-sub); margin-bottom:10px;">
+                            Uploaded by <b>${this.esc(p.ownerName||'Unknown')}</b> • ${new Date(p.createdAt).toLocaleDateString()} • ${p.size}KB
+                        </div>
+                        <div>${tagsHtml}</div>
+                    </div>
+                    
+                    <div style="margin-bottom:20px; line-height:1.6;">${this.esc(p.desc)}</div>
+                    
+                    <h3>Preview</h3>
+                    <div class="preview-box">
+                        <iframe id="preview-frame" sandbox="allow-scripts allow-same-origin"></iframe>
+                    </div>
+
+                    <div class="flex" style="gap:10px; flex-wrap:wrap; margin-bottom:20px;">
+                        <button class="btn-primary" style="flex:1" onclick="app.downloadProject('${p.id}')">
+                            <i class="fa-solid fa-download"></i> Download
+                        </button>
+                        <button class="btn-secondary ${isLiked}" style="flex:1" onclick="app.likeProject('${p.id}')">
+                            <i class="fa-solid fa-heart"></i> Like (${p.likes||0})
+                        </button>
+                        <button class="btn-secondary" style="flex:1" onclick="app.saveProject('${p.id}')">
+                            <i class="fa-${isSaved?'solid':'regular'} fa-bookmark"></i> ${isSaved?'Saved':'Save'}
+                        </button>
+                    </div>
+
+                    <div class="flex" style="gap:10px; margin-bottom:20px;">
+                         <button class="btn-secondary" style="flex:1" onclick="app.forkProject('${p.id}')">
+                            <i class="fa-solid fa-code-branch"></i> Fork
+                        </button>
+                        ${isOwner ? `
+                        <button class="btn-secondary" style="background:#fee2e2; color:#b91c1c; border-color:#fecaca;" onclick="app.deleteProject('${p.id}')">
+                            <i class="fa-solid fa-trash"></i> Delete
+                        </button>
+                        <button class="btn-secondary" onclick="app.openUpload('${p.id}')">
+                            <i class="fa-solid fa-pen"></i> Edit
+                        </button>
+                        ` : ''}
+                    </div>
+                `;
+
+                document.getElementById('detail-content').innerHTML = html;
+                this.loadComments(id);
+                this.router('detail');
+
+                // Load iframe safely
+                setTimeout(() => {
+                    const iframe = document.getElementById('preview-frame');
+                    iframe.srcdoc = p.code;
+                }, 100);
+            },
+
+            likeProject: function(id) {
+                if(localStorage.getItem('liked_'+id)) return;
+                
+                const r = ref(db, `projects/${id}/likes`);
+                runTransaction(r, (likes) => (likes || 0) + 1).then(() => {
+                    localStorage.setItem('liked_'+id, 'true');
+                    this.showDetail(id); // Refresh UI
+                });
+            },
+
+            saveProject: async function(id) {
+                const savedRef = ref(db, `users/${this.currentUser.id}/saved/${id}`);
+                const isSaved = this.currentUser.saved && this.currentUser.saved[id];
+                
+                if(isSaved) {
+                    await remove(savedRef);
+                } else {
+                    await set(savedRef, true);
+                }
+                this.showDetail(id); // Refresh
+            },
+
+            downloadProject: function(id) {
+                const p = this.projects.find(x => x.id === id);
+                const blob = new Blob([p.code], {type: 'text/html'});
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = p.name.replace(/\s+/g, '_') + '.html';
+                a.click();
+            },
+
+            deleteProject: async function(id) {
+                if(confirm("Delete this project?")) {
+                     await remove(ref(db, `projects/${id}`));
+                     this.router('feed');
+                }
+            },
+
+            forkProject: function(id) {
+                const p = this.projects.find(x => x.id === id);
+                if(confirm(`Fork "${p.name}" to your projects?`)) {
+                    const newP = {
+                        ...p,
+                        name: p.name + ' (Fork)',
+                        ownerId: this.currentUser.id,
+                        ownerName: this.currentUser.name,
+                        createdAt: Date.now(),
+                        updatedAt: Date.now(),
+                        likes: 0,
+                        views: 0,
+                        forkedFrom: p.id
+                    };
+                    delete newP.id; // Remove old ID
+                    push(ref(db, 'projects'), newP);
+                    alert("Project forked successfully!");
+                    this.router('feed');
+                }
+            },
+
+            // --- COMMENTS ---
+            loadComments: function(id) {
+                const list = document.getElementById('comments-list');
+                list.innerHTML = '<div style="text-align:center; color:var(--text-sub)">Loading...</div>';
+                
+                onValue(ref(db, `projects/${id}/comments`), (snap) => {
+                    list.innerHTML = '';
+                    const data = snap.val();
+                    if(!data) {
+                        list.innerHTML = '<div style="font-size:0.9rem; color:var(--text-sub)">No comments yet.</div>';
+                        return;
+                    }
+                    Object.values(data).forEach(c => {
+                        list.innerHTML += `
+                        <div class="comment">
+                            <div class="comment-user">${this.esc(c.user)} <span style="font-weight:400; font-size:0.7rem; color:var(--text-sub)">• ${new Date(c.time).toLocaleDateString()}</span></div>
+                            <div class="comment-text">${this.esc(c.text)}</div>
+                        </div>`;
+                    });
+                });
+            },
+
+            postComment: function() {
+                const txt = document.getElementById('comment-input').value;
+                if(!txt.trim()) return;
+                
+                push(ref(db, `projects/${this.currentProject.id}/comments`), {
+                    user: this.currentUser.name,
+                    text: txt,
+                    time: Date.now()
+                });
+                document.getElementById('comment-input').value = '';
+            },
+
+            // --- PROFILE ---
+            renderProfile: function() {
+                document.getElementById('profile-name').innerText = this.currentUser.name;
+                document.getElementById('profile-img').src = this.currentUser.avatar;
+
+                // My Projects
+                const myProjs = this.projects.filter(p => p.ownerId === this.currentUser.id);
+                document.getElementById('stat-projects').innerText = myProjs.length;
+                
+                let totalLikes = 0;
+                myProjs.forEach(p => totalLikes += (p.likes || 0));
+                document.getElementById('stat-likes').innerText = totalLikes;
+
+                const myList = document.getElementById('profile-projects-list');
+                myList.innerHTML = '';
+                if(myProjs.length === 0) myList.innerHTML = '<p style="color:var(--text-sub)">No projects yet.</p>';
+                myProjs.forEach(p => myList.innerHTML += this.createCardHtml(p));
+
+                // Saved Projects
+                const savedList = document.getElementById('profile-saved-list');
+                savedList.innerHTML = '';
+                const savedIds = Object.keys(this.currentUser.saved || {});
+                if(savedIds.length === 0) savedList.innerHTML = '<p style="color:var(--text-sub)">No saved projects.</p>';
+                else {
+                    const savedProjs = this.projects.filter(p => savedIds.includes(p.id));
+                    savedProjs.forEach(p => savedList.innerHTML += this.createCardHtml(p));
+                }
+            },
+
+            editProfile: function() {
+                document.getElementById('edit-p-name').value = this.currentUser.name;
+                this.toggleModal('profile-modal');
+            },
+
+            saveProfile: async function() {
+                const name = document.getElementById('edit-p-name').value;
+                const file = document.getElementById('edit-p-img').files[0];
+                let url = this.currentUser.avatar;
+
+                document.getElementById('loader').style.display = 'flex';
+                this.toggleModal('profile-modal');
+
+                if(file) {
+                    const u = await this.uploadImageBB(file);
+                    if(u) url = u;
+                }
+
+                await update(ref(db, 'users/' + this.currentUser.id), {
+                    name: name,
+                    avatar: url
+                });
+
+                document.getElementById('loader').style.display = 'none';
+            },
+
+            // Utils
+            esc: function(s) {
+                if(!s) return '';
+                return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+            }
+        };
+
+        // Start App
+        window.app.init();
+    </script>
+</body>
+</html>
